@@ -11,9 +11,11 @@ module AM
       if shell =~ /zsh/
         @history_pattern = '.*;(.*)'
         @sh_history_file = File.expand_path('~/.zsh_history')
+        @tail_margin     = 0
       elsif shell =~ /bash/
         @history_pattern = '(.*)'
         @sh_history_file = File.expand_path('~/.bash_history')
+        @tail_margin     = 1
       else
         puts "does not support is #{shell}"
       end
@@ -23,7 +25,7 @@ module AM
       exit if @sh_history_file.nil?
 
       commands = []
-      last_commands = `tail -6  #{@sh_history_file} | head -5`.split("\n")
+      last_commands = `tail -#{6-@tail_margin} #{@sh_history_file} | head -5`.split("\n")
       last_commands.each_with_index  do |c,i|
         record = c.split(/#{@history_pattern}/)[COMMAND].strip
         puts " #{(i+1).to_s} : #{record.to_s}"
@@ -34,7 +36,7 @@ module AM
 
     def get_last_command
       exit if @sh_history_file.nil?
-      `tail -2 #{@sh_history_file} | head -1`.split(/#{@history_pattern}/)[COMMAND].strip
+      `tail -#{2-@tail_margin} #{@sh_history_file} | head -1`.split(/#{@history_pattern}/)[COMMAND].strip
     end
 
   end
