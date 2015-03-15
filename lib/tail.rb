@@ -28,7 +28,7 @@ module AM
       last_commands = `tail -6  #{@sh_history_file} | head -5`.split("\n")
       last_commands.each_with_index  do |c,i|
         record = c.split(/#{@history_pattern}/)[@command_col].strip
-        puts (i+1).to_s + ': ' + record.to_s
+        puts " #{(i+1).to_s} : #{record.to_s}"
         commands << record
       end
       commands
