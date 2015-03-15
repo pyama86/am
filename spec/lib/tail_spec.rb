@@ -7,7 +7,7 @@ describe AM::Tail do
       @tail = AM::Tail.new
     end
 
-    it 'print_last_commands' do
+    it 'get_last_five_commands' do
       expect(@tail.get_last_five_command.length).to eq 5
       expect(@tail.get_last_five_command[0]).to match(/[a-z]+/)
     end
