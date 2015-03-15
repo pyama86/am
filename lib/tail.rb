@@ -28,7 +28,14 @@ module AM
         puts "does not support is #{shell}"
         exit
       end
+
       @profile[:file] = config.pg['history_file'] unless config.pg['history_file'].nil?
+      @profile[:file] = File.expand_path(@profile[:file])
+
+      unless File.exists?(@profile[:file])
+        puts "history file not found #{@profile[:file]}"
+        exit
+      end
     end
 
     def get_last_five_command

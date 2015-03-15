@@ -8,21 +8,31 @@ module AM
     end
 
     def file_load
-      @al = []
-      @pg = {}
+      @al    = []
+      @pg    = {} 
+      pg_buf = []
+
+      # load alias config
       File.open(CONFIG_FILE, 'r') do |file|
-
         file.each_line do |line|
-          @al  << line.gsub(/^alias /, '').strip.split('=', 2) if(line =~ /^alias/)
-          @pg   = Hash[*line.strip.split('=', 2)] if line =~ /^[^alias]/ && line =~ /^[^#.*]/
+          @al    << line.gsub(/^alias /, '').strip.split('=', 2) if(line =~ /^alias/)
+          # migration
+          pg_buf << line.strip.split('=', 2) if line.strip =~ /^[^alias]/ && line.strip =~ /^[^#.*]/ && line.strip !~ /^$/
         end
-
       end if File.exists?(CONFIG_FILE)
+
+      # load program config
+      File.open(LOCAL_FILE, 'r') do |file|
+        file.each_line do |line|
+          pg_buf << line.strip.split('=', 2) if line.strip =~ /^[^alias]/ && line.strip =~ /^[^#.*]/ && line.strip !~ /^$/
+        end
+      end if File.exists?(LOCAL_FILE)
+      @pg   = Hash[pg_buf] unless pg_buf.empty?
     end
 
     def save_config(exclude=nil)
-      tmp_file = CONFIG_FILE + '.tmp'
-      file = File.open(tmp_file, "w")
+      config_tmp_file = CONFIG_FILE + '.tmp'
+      file = File.open(config_tmp_file, "w")
       new_al = []
 
       file.puts("# alias config")
@@ -34,14 +44,17 @@ module AM
         end
       end
       @al = new_al
+      file.close
 
+      local_tmp_file = LOCAL_FILE + '.tmp'
+      file = File.open(local_tmp_file, "w")
       file.puts("\n# pg config")
       @pg.each do |p,v|
         r = "#{p.to_s}=#{v.to_s}"
         file.puts(r)
       end
       file.close
-      File.rename(tmp_file, CONFIG_FILE)
+      (File.rename(config_tmp_file, CONFIG_FILE) == 0 && File.rename(local_tmp_file, LOCAL_FILE) == 0)
     end
   end
 end

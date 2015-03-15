@@ -57,7 +57,7 @@ echo 'source ~/.am_config' >> ~/.bash_profile
   * history file location(optional)
 
   ```
-  => ~/.am_config
+  => ~/.am_local_config
 
   history_file=~/.custom_history
   ```
