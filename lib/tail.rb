@@ -12,7 +12,7 @@ module AM
         @history_pattern = '.*;(.*)'
         @sh_history_file = File.expand_path('~/.zsh_history')
       elsif shell =~ /bash/
-        @history_pattern = '(.*)\n'
+        @history_pattern = '(.*)'
         @sh_history_file = File.expand_path('~/.bash_history')
       else
         puts "does not support is #{shell}"
