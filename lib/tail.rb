@@ -8,36 +8,47 @@ module AM
 
     def set_profile
       shell = `echo $SHELL`
+      @profile = {}
+
       if shell =~ /zsh/
-        @history_pattern = '.*;(.*)'
-        @sh_history_file = File.expand_path('~/.zsh_history')
-        @tail_margin     = 0
+        @profile = {
+          pattern:  '.*;(.*)',
+          file:     File.expand_path('~/.zsh_history'),
+          margin:   0,
+          max_line: 5,
+        }
       elsif shell =~ /bash/
-        @history_pattern = '(.*)'
-        @sh_history_file = File.expand_path('~/.bash_history')
-        @tail_margin     = 1
+        @profile = {
+          pattern:  '(.*)',
+          file:     File.expand_path('~/.bash_history'),
+          margin:   1,
+          max_line: 5,
+        }
       else
         puts "does not support is #{shell}"
+        exit
       end
     end
 
-    def print_last_commands
-      exit if @sh_history_file.nil?
-
+    def get_last_five_command
+      exit if @profile.empty?
       commands = []
-      last_commands = `tail -#{6-@tail_margin} #{@sh_history_file} | head -5`.split("\n")
+      last_commands = `tail -#{@profile[:max_line] + 1 - @profile[:margin]} #{@profile[:file]} | head -#{@profile[:max_line]}`.split("\n")
+
       last_commands.each_with_index  do |c,i|
-        record = c.split(/#{@history_pattern}/)[COMMAND].strip
-        puts " #{(i+1).to_s} : #{record.to_s}"
+        record = c.split(/#{@profile[:pattern]}/)[COMMAND].strip
         commands << record
-      end
+      end unless last_commands.empty?
+
       commands
     end
 
     def get_last_command
-      exit if @sh_history_file.nil?
-      `tail -#{2-@tail_margin} #{@sh_history_file} | head -1`.split(/#{@history_pattern}/)[COMMAND].strip
-    end
+      exit if @profile[:file].empty?
 
+      if last_row = `tail -#{2-@profile[:margin]} #{@profile[:file]} | head -1`.split(/#{@profile[:pattern]}/)
+        last_row[COMMAND].strip
+      end
+    end
   end
 end

@@ -19,7 +19,7 @@ module AM
       if @config.empty?
         puts 'a blank config'
       else
-        @ui.current_config(@config)
+        @ui.print_current_config(@config)
       end
     end
 
@@ -29,19 +29,21 @@ module AM
       tail = Tail.new
       # registeration from history choice
       if options[:list]
-        commands = tail.print_last_commands
+        commands = tail.get_last_five_command
+        @ui.print_last_commands(commands)
         add_record = @ui.add_command_with_number(commands)
+
       # registeration from last history
       else
         last_command = tail.get_last_command
         add_record   = @ui.add_command_with_last_history(last_command)
       end
 
-      if uniq?(add_record)
+      if uniq?(add_record) && valid?(add_record)
         @config << add_record
         add_config(add_record) 
       else
-        AM.before_break("")
+        AM.p1("")
         show
       end
     end
@@ -56,7 +58,7 @@ module AM
       end
 
       if options[:list] || delete_alias == nil
-        @ui.current_config(@config)
+        @ui.print_current_config(@config)
         delete_alias = @ui.del_command_with_number(@config)
       end
         delete_config(delete_alias)
@@ -67,8 +69,8 @@ module AM
       def add_config(add_record)
         config  = Config.new
         if config.save_config(@config)
-          AM.before_break("[success] #{add_record[ALIAS]} / #{add_record[COMMAND]} added command")
-          AM.after_break("please run: [ source #{CONFIG_FILE} ]")
+          AM.p1("[success] #{add_record[ALIAS]} / #{add_record[COMMAND]} added command")
+          AM.p2("please run: [ source #{CONFIG_FILE} ]")
         else
           puts   "[error] #{add_record[ALIAS]} / #{add_record[COMMAND]} couldn't add command" 
         end
@@ -77,26 +79,33 @@ module AM
       def delete_config(exclude)
         config  = Config.new
         if config.save_config(@config, exclude)
-          AM.before_break("[success] delete alias #{exclude}")
-          AM.after_break("please run: [ source #{CONFIG_FILE} ]")
+          AM.p1("[success] delete alias #{exclude}")
+          AM.p2("please run: [ source #{CONFIG_FILE} ]")
         else
-          AM.after_break("[error] failue delete alias #{exclude}}")
+          AM.p2("[error] failue delete alias #{exclude}}")
         end
       end
 
       def uniq?(add_record)
-        @config.each do |al, command|
-          if add_record[ALIAS] == al
-            AM.before_break("[error] not written as duplecate alias is '#{add_record[ALIAS]}'")
+        @config.each do |a,c|
+          if add_record[ALIAS] == a
+            AM.p1("[error] not written as duplecate alias is '#{add_record[ALIAS]}'")
             return false
-          elsif add_record[COMMAND] == command
-            AM.before_break("[error] not written as duplecate command is #{add_record[COMMAND]}")
+          elsif add_record[COMMAND] == c
+            AM.p1("[error] not written as duplecate command is #{add_record[COMMAND]}")
             return false
           end
         end
-        return true
+        true
+      end
+
+      def valid?(add_record)
+        unless add_record[ALIAS].length > 0 || add_record[COMMAND].length > 0
+          puts   "[error] #{add_record[ALIAS]} / #{add_record[COMMAND]} length equal 0"
+          return false 
+        end
+        true
       end
     end
-
   end
 end

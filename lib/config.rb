@@ -2,7 +2,6 @@ require 'am'
 
 module AM
   class Config
-
     def current
       config = []
       File.open(CONFIG_FILE, 'r') do |file|
@@ -13,17 +12,17 @@ module AM
       config
     end
 
-    def save_config(cache, exclude=nil)
+    def save_config(config, exclude=nil)
       tmp_file = CONFIG_FILE + '.tmp'
       file = File.open(tmp_file, "w")
 
-      cache.each do |al, command|
-        record = "alias #{al.to_s.strip}=#{command.to_s.strip}"
-        if al.to_s.strip != exclude
-          file.puts(record) 
+      config.each do |a,c|
+        r = "alias #{a.to_s}=#{c.to_s}"
+        if a.to_s != exclude
+          file.puts(r)
         end
-        `#{record}`
       end
+
       file.close
       File.rename(tmp_file, CONFIG_FILE)
     end

@@ -2,27 +2,22 @@ require 'am'
 
 module AM
   class Ui
-    def current_config(config)
-      al_max_len = 0
+    def print_current_config(config)
+      aml = config.max_by{|c| c[0].length }[0].length #alias max length
+      iml = config.length.to_s.length                 #index max length
 
-      AM::after_break("current commands of the config")
+      AM::p1("current commands of the config")
+      config.each_with_index do|r,i|
+        # 1: name=command
+        puts " #{' '*(iml - (i+1).to_s.length)}#{(i+1).to_s} : #{r[ALIAS].to_s}#{' '*(aml-r[ALIAS].length)} = #{r[COMMAND].to_s}"
+      end unless config.empty?
+      AM::p1
+    end
 
-      config.each do |al,command|
-        al_max_len  = max(al.to_s.length, al_max_len)
-      end
-
-      index_max_len = config.length.to_s.length
-
-      config.each_with_index do|record,index|
-
-        as = ''
-        (al_max_len - record[ALIAS].length.to_i).times do as = as + ' ' end
-        is = ''
-        (index_max_len - (index+1).to_s.length).times  do is = is + ' ' end
-
-        puts " #{is}#{(index+1).to_s} : #{record[ALIAS].to_s}#{as} = #{record[COMMAND].to_s}"
-      end
-      AM::before_break("")
+    def print_last_commands(commands)
+      commands.each_with_index  do |c,i|
+        puts " #{(i+1).to_s} : #{c.to_s}"
+      end unless commands.empty?
     end
 
     def add_command_with_number(commands)
@@ -30,11 +25,11 @@ module AM
       number     = please_input
       valid?(number, '^[^1-5]', '[error] input using number!')
       alias_name = get_alias
-      [alias_name, quot(commands[number.to_i-1])]
+      [alias_name, quot(commands[number.to_i-1].strip)]
     end
 
     def add_command_with_last_history(command)
-      puts "add command is #{quot(command)}"
+      puts "add command is #{quot(command.strip)}"
       alias_name   = get_alias
       [alias_name, quot(command)]
     end
@@ -50,7 +45,7 @@ module AM
       print "please input add command alias: "
       name = please_input
       valid?(name, '^[^\w-]', '[error] input using a-z or 0-9 or _ or -!')
-      name
+      name.strip
     end
 
     def valid?(val, pattern, message)
