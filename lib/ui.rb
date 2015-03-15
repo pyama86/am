@@ -3,14 +3,14 @@ require 'am'
 module AM
   class Ui
     def print_current_config(config)
-      aml = config.max_by{|c| c[0].length }[0].length #alias max length
-      iml = config.length.to_s.length                 #index max length
+      aml = config.al.max_by{|c| c[0].length }[0].length #alias max length
+      iml = config.al.length.to_s.length                 #index max length
 
       AM::p1("current commands of the config")
-      config.each_with_index do|r,i|
+      config.al.each_with_index do|r,i|
         # 1: name=command
         puts " #{' '*(iml - (i+1).to_s.length)}#{(i+1).to_s} : #{r[ALIAS].to_s}#{' '*(aml-r[ALIAS].length)} = #{r[COMMAND].to_s}"
-      end unless config.empty?
+      end unless config.al.empty?
       AM::p1
     end
 
@@ -38,7 +38,7 @@ module AM
       print 'please input delete command number: '
       number = please_input
       valid?(number, '^[^0-9]', '[error] input using number!')
-      delete_alias = config[number.to_i-1][ALIAS] if config.length >= number.to_i
+      delete_alias = config.al[number.to_i-1][ALIAS] if config.al.length >= number.to_i
     end
 
     def get_alias

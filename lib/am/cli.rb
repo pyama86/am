@@ -9,14 +9,13 @@ module AM
     default_command :show
     def initialize(*args)
       super
-      config  = Config.new
-      @config = config.current
+      @config  = Config.new
       @ui     = Ui.new
     end
 
     desc "show", "show current alias"
     def show
-      if @config.empty?
+      if @config.al.empty?
         puts 'a blank config'
       else
         @ui.print_current_config(@config)
@@ -26,7 +25,8 @@ module AM
     desc "add", "add alias"
     option :list, :type => :boolean, :aliases => '-l'
     def add
-      tail = Tail.new
+      tail = Tail.new(@config)
+
       # registeration from history choice
       if options[:list]
         commands = tail.get_last_five_command
@@ -40,7 +40,7 @@ module AM
       end
 
       if uniq?(add_record) && valid?(add_record)
-        @config << add_record
+        @config.al << add_record
         add_config(add_record) 
       else
         AM.p1("")
@@ -52,7 +52,7 @@ module AM
     option :list, :type => :boolean, :aliases => '-l'
 
     def del(delete_alias=nil)
-      if @config.empty?
+      if @config.al.empty?
         puts 'a blank config'
         exit
       end
@@ -67,27 +67,27 @@ module AM
     no_commands do
 
       def add_config(add_record)
-        config  = Config.new
-        if config.save_config(@config)
+        if @config.save_config()
           AM.p1("[success] #{add_record[ALIAS]} / #{add_record[COMMAND]} added command")
           AM.p2("please run: [ source #{CONFIG_FILE} ]")
+
         else
           puts   "[error] #{add_record[ALIAS]} / #{add_record[COMMAND]} couldn't add command" 
         end
       end
 
       def delete_config(exclude)
-        config  = Config.new
-        if config.save_config(@config, exclude)
+        if @config.save_config(exclude)
           AM.p1("[success] delete alias #{exclude}")
           AM.p2("please run: [ source #{CONFIG_FILE} ]")
+
         else
           AM.p2("[error] failue delete alias #{exclude}}")
         end
       end
 
       def uniq?(add_record)
-        @config.each do |a,c|
+        @config.al.each do |a,c|
           if add_record[ALIAS] == a
             AM.p1("[error] not written as duplecate alias is '#{add_record[ALIAS]}'")
             return false
