@@ -51,6 +51,18 @@ echo 'source ~/.am_config' >> ~/.bash_profile
 
     $ am del -l(list)
     delete alias select from current config
+
+### configure
+
+  * history file location(optional)
+
+  ```
+  => ~/.am_config
+
+  history_file=~/.custom_history
+  ```
+
+
 ## License
 * MIT
 

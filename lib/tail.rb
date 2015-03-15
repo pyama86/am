@@ -2,32 +2,33 @@ require 'am'
 
 module AM
   class Tail
-    def initialize(*args)
-      set_profile
+    def initialize(config)
+      set_profile(config)
     end
 
-    def set_profile
-      shell = `echo $SHELL`
+    def set_profile(config)
+      shell = ENV['SHELL']
       @profile = {}
 
       if shell =~ /zsh/
         @profile = {
           pattern:  '.*;(.*)',
-          file:     File.expand_path('~/.zsh_history'),
           margin:   0,
           max_line: 5,
+          file:     '~/.zsh_history'
         }
       elsif shell =~ /bash/
         @profile = {
           pattern:  '(.*)',
-          file:     File.expand_path('~/.bash_history'),
           margin:   1,
           max_line: 5,
+          file:     '~/.bash_history'
         }
       else
         puts "does not support is #{shell}"
         exit
       end
+      @profile[:file] = config.pg['history_file'] unless config.pg['history_file'].nil?
     end
 
     def get_last_five_command
