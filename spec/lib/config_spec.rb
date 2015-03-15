@@ -4,7 +4,7 @@ describe AM::Config do
   context 'zsh' do
     before do
       `echo "alias test1='test az - AZ 09 _'" > #{AM::CONFIG_FILE}`
-      `echo "history_file=~/.zsh_history" >> #{AM::CONFIG_FILE}`
+      `echo "history_file=~/.zsh_history" >  #{AM::LOCAL_FILE}`
       @config= AM::Config.new
     end
 
@@ -17,11 +17,11 @@ describe AM::Config do
     it 'save config'do
       # add
       config = @config.al << ['test2', "'abcdefgeijklmn'"]
-      expect(@config.save_config).to eql(0)
+      expect(@config.save_config).to be true
       expect(@config.al.length).to eql(2)
 
       # delete
-      expect(@config.save_config('test1')).to eql(0)
+      expect(@config.save_config('test1')).to be true
       expect(@config.al.length).to eql(1)
 
       # valu check
@@ -33,10 +33,10 @@ describe AM::Config do
 
     it 'pg config' do
       # @config.pg_check
-      `echo "history_file=~/.csh_history" >> #{AM::CONFIG_FILE}`
+      `echo "history_file=~/.csh_history" > #{AM::LOCAL_FILE}`
       config= AM::Config.new
       expect(config.pg['history_file']).to eq "~/.csh_history"
-      `echo "" > #{AM::CONFIG_FILE}`
+      `echo "" > #{AM::LOCAL_FILE}`
     end
   end
 end
