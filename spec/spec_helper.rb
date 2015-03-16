@@ -1,3 +1,4 @@
+# encoding: utf-8 
 require 'am'
 require 'tail'
 require 'config'

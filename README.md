@@ -1,4 +1,6 @@
 # Am(Alias Manager)
+[![Build Status](https://travis-ci.org/ka-yamashita/am.svg?branch=master)](https://travis-ci.org/ka-yamashita/am)
+[![Code Climate](https://codeclimate.com/github/ka-yamashita/am/badges/gpa.svg)](https://codeclimate.com/github/ka-yamashita/am)
 
 `alias` command wrapper
 
