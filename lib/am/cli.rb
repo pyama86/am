@@ -1,3 +1,4 @@
+# encoding: utf-8 
 require 'am'
 require 'tail'
 require 'config'
@@ -10,7 +11,7 @@ module AM
     def initialize(*args)
       super
       @config  = Config.new
-      @ui     = Ui.new
+      @ui      = Ui.new
     end
 
     desc "show", "show current alias"

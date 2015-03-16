@@ -4,11 +4,9 @@ describe AM::Tail do
   context 'tail commands tests' do
     shared_examples_for "shell test" do
       before do
-        config= AM::Config.new
-        config.pg['history_file'] = hist_file
         ENV['SHELL'] = shell
-        add_history(hist_file)
-        @tail = AM::Tail.new(config)
+        @tail = AM::Tail.new(AM::Config.new)
+        add_history(@tail.profile[:file])
       end
 
       it 'get_last_five_commands' do
@@ -23,13 +21,11 @@ describe AM::Tail do
     end
 
     describe 'zsh' do
-      let(:hist_file) { '~/.zsh_history' }
       let(:shell)     {'/bin/zsh' }
       it_should_behave_like 'shell test'
     end
 
     describe 'bash' do
-      let(:hist_file) { '~/.bash_history' }
       let(:shell)     {'/bin/bash' }
       it_should_behave_like 'shell test'
     end

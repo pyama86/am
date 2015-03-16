@@ -1,7 +1,9 @@
+# encoding: utf-8 
 require 'am'
 
 module AM
   class Tail
+    attr_accessor :profile
     def initialize(config)
       set_profile(config)
     end

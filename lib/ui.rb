@@ -1,3 +1,4 @@
+# encoding: utf-8 
 require 'am'
 
 module AM
@@ -44,7 +45,7 @@ module AM
     def get_alias
       print "please input add command alias: "
       name = please_input
-      valid?(name, '^[^\w-]', '[error] input using a-z or 0-9 or _ or -!')
+      valid?(name, '[^\w-]', '[error] input using a-z or 0-9 or _ or -')
       name.strip
     end
 
