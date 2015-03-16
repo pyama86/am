@@ -41,7 +41,7 @@ module AM
       end
 
       if uniq?(add_record) && valid?(add_record)
-        @config.al << add_record
+        @config.al.merge!(add_record)
         add_config(add_record) 
       else
         AM.p1("")
@@ -51,7 +51,6 @@ module AM
 
     desc "del", "delete alias"
     option :list, :type => :boolean, :aliases => '-l'
-
     def del(delete_alias=nil)
       if @config.al.empty?
         puts 'a blank config'
@@ -59,26 +58,29 @@ module AM
       end
 
       if options[:list] || delete_alias == nil
-        @ui.print_current_config(@config)
-        delete_alias = @ui.del_command_with_number(@config)
+        # convert array
+        arr =  @ui.print_current_config(@config)
+        delete_alias = @ui.del_command_with_number(arr)
       end
-        delete_config(delete_alias)
+      @config.al.delete(delete_alias)
+      delete_config(delete_alias)
     end
 
     no_commands do
-
+      # todo merge config
       def add_config(add_record)
-        if @config.save_config()
-          AM.p1("[success] #{add_record[ALIAS]} / #{add_record[COMMAND]} added command")
+        ak,av = add_record.first
+        if @config.save_config
+          AM.p1("[success] #{ak} / #{av} added command")
           AM.p2("please run: [ source #{CONFIG_FILE} ]")
 
         else
-          puts   "[error] #{add_record[ALIAS]} / #{add_record[COMMAND]} couldn't add command" 
+          puts   "[error] #{ak} / #{av} couldn't add command" 
         end
       end
 
       def delete_config(exclude)
-        if @config.save_config(exclude)
+        if @config.save_config
           AM.p1("[success] delete alias #{exclude}")
           AM.p2("please run: [ source #{CONFIG_FILE} ]")
 
@@ -86,23 +88,26 @@ module AM
           AM.p2("[error] failue delete alias #{exclude}}")
         end
       end
-
+      # todo end
+      # todo move config class
       def uniq?(add_record)
-        @config.al.each do |a,c|
-          if add_record[ALIAS] == a
-            AM.p1("[error] not written as duplecate alias is '#{add_record[ALIAS]}'")
+        ak,av = add_record.first
+        @config.al.each do |k,v|
+          if ak == k
+            AM.p1("[error] not written as duplecate alias is '#{ak}'")
             return false
-          elsif add_record[COMMAND] == c
-            AM.p1("[error] not written as duplecate command is #{add_record[COMMAND]}")
+          elsif av == v
+            AM.p1("[error] not written as duplecate command is #{av}")
             return false
           end
         end
         true
       end
-
+      # end
       def valid?(add_record)
-        unless add_record[ALIAS].length > 0 || add_record[COMMAND].length > 0
-          puts   "[error] #{add_record[ALIAS]} / #{add_record[COMMAND]} length equal 0"
+        ak,av = add_record.first
+        unless ak.length > 0 || av.length > 0
+          puts   "[error] #{ak} / #{av} length equal 0"
           return false 
         end
         true

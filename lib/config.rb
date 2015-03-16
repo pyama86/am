@@ -6,15 +6,31 @@ module AM
     attr_accessor :al, :pg
 
     def initialize
-      @al = []
+      @al = {}
       @pg = {}
       load_config
     end
 
     def load_config
       @al = file_load(CONFIG_FILE)
-      buf = file_load(LOCAL_FILE)
-      @pg = Hash[buf] unless buf.empty?
+      @pg = file_load(LOCAL_FILE)
+    end
+
+    def save_config
+      (file_write(CONFIG_FILE, @al, 'alias ') && file_write(LOCAL_FILE,  @pg))
+    end
+
+    def file_write(file_name, config, prefix=nil)
+      tmp_file = file_name + '.tmp'
+      file = File.open(tmp_file, "w")
+
+      config.each do |k,v|
+        r = "#{prefix}#{k.to_s}=#{v.to_s}"
+        file.puts(r)
+      end
+
+      file.close
+      (File.rename(tmp_file, file_name) == 0)
     end
 
     def file_load(file_name)
@@ -25,36 +41,7 @@ module AM
           buf    << line.gsub(/^alias /, '').split('=', 2) if line !~ /^$/ && line =~ /.+=.+/ && line !~ /^#.*/
         end
       end if File.exists?(file_name)
-      buf
-    end
-
-    def save_config(exclude=nil)
-
-      al_result = file_write(CONFIG_FILE, @al, 'alias ', exclude)
-      pg_result = file_write(LOCAL_FILE,  @pg)
-
-      if al_result && pg_result
-        @al = al_result
-        @pg = Hash[pg_result] unless pg_result.empty?
-        true
-      end
-    end
-
-    def file_write(file_name, config, prefix=nil, exclude=nil)
-      tmp_file = file_name + '.tmp'
-      file = File.open(tmp_file, "w")
-      new = []
-
-      config.each do |n,v|
-        r = "#{prefix}#{n.to_s}=#{v.to_s}"
-        if n.to_s != exclude
-          file.puts(r)
-          new << [n, v]
-        end
-      end
-
-      file.close
-      new if File.rename(tmp_file, file_name) == 0
+      Hash[buf]
     end
   end
 end

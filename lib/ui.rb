@@ -6,13 +6,15 @@ module AM
     def print_current_config(config)
       aml = config.al.max_by{|c| c[0].length }[0].length #alias max length
       iml = config.al.length.to_s.length                 #index max length
-
+      arr = []                                           #use delete number
       AM::p1("current commands of the config")
-      config.al.each_with_index do|r,i|
+      config.al.each_with_index do|(k,v),i|
         # 1: name=command
-        puts " #{' '*(iml - (i+1).to_s.length)}#{(i+1).to_s} : #{r[ALIAS].to_s}#{' '*(aml-r[ALIAS].length)} = #{r[COMMAND].to_s}"
+        puts " #{' '*(iml - (i+1).to_s.length)}#{(i+1).to_s} : #{k.to_s}#{' '*(aml-k.length)} = #{v.to_s}"
+        arr << [i,k]
       end unless config.al.empty?
       AM::p1
+      arr
     end
 
     def print_last_commands(commands)
@@ -26,20 +28,21 @@ module AM
       number     = please_input
       valid?(number, '^[^1-5]', '[error] input using number!')
       alias_name = get_alias
-      [alias_name, quot(commands[number.to_i-1].strip)]
+      {alias_name => quot(commands[number.to_i-1].strip)}
     end
 
     def add_command_with_last_history(command)
       puts "add command is #{quot(command.strip)}"
       alias_name   = get_alias
-      [alias_name, quot(command)]
+      {alias_name => quot(command)}
     end
 
-    def del_command_with_number(config)
+    def del_command_with_number(arr)
       print 'please input delete command number: '
       number = please_input
       valid?(number, '^[^0-9]', '[error] input using number!')
-      delete_alias = config.al[number.to_i-1][ALIAS] if config.al.length >= number.to_i
+      # return delete hash key
+      arr[number.to_i-1][1] if arr.length >= number.to_i
     end
 
     def get_alias
@@ -58,7 +61,7 @@ module AM
 
     def please_input
       while val = STDIN.gets
-        break if /\n$/ =~ val 
+        break if /\n$/ =~ val
       end
       val.strip
     end
