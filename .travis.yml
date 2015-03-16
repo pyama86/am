@@ -6,4 +6,6 @@ script: bundle exec rspec
 before_script:
   - "touch ~/.zsh_history"
   - "touch ~/.bash_history"
-
+addons:
+  code_climate:
+    repo_token:12696de76803f797a3add017d83ea158a13fd6f3bde7fdffbc3218ccaf473a2a

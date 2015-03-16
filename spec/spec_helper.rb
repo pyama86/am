@@ -3,7 +3,8 @@ require 'am'
 require 'am/cli'
 require 'tail'
 require 'config'
-
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
 
 def add_history(hist_file)
 
