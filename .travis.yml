@@ -1,0 +1,9 @@
+language: ruby
+rvm:
+- 2.0.0
+- 2.1.4
+script: bundle exec rspec
+before_script:
+  - "touch ~/.zsh_history"
+  - "touch ~/.bash_history"
+
