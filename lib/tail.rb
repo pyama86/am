@@ -12,14 +12,12 @@ module AM
 
       if shell =~ /zsh/
         @profile = {
-          pattern:  '.*;(.*)',
           margin:   0,
           max_line: 5,
           file:     '~/.zsh_history'
         }
       elsif shell =~ /bash/
         @profile = {
-          pattern:  '(.*)',
           margin:   1,
           max_line: 5,
           file:     '~/.bash_history'
@@ -44,8 +42,9 @@ module AM
       last_commands = `tail -#{@profile[:max_line] + 1 - @profile[:margin]} #{@profile[:file]} | head -#{@profile[:max_line]}`.split("\n")
 
       last_commands.each_with_index  do |c,i|
-        record = c.split(/#{@profile[:pattern]}/)[COMMAND].strip
-        commands << record
+        if r = sampling(c)
+          commands << r
+        end
       end unless last_commands.empty?
 
       commands
@@ -54,9 +53,22 @@ module AM
     def get_last_command
       exit if @profile[:file].empty?
 
-      if last_row = `tail -#{2-@profile[:margin]} #{@profile[:file]} | head -1`.split(/#{@profile[:pattern]}/)
-        last_row[COMMAND].strip
+      if c = `tail -#{2-@profile[:margin]} #{@profile[:file]} | head -1`
+        if r = sampling(c)
+          r
+        end
       end
+    end
+
+    def sampling(command)
+      zsh  = '[0-9]+:[0-0];(.*)'
+      bash = '(.*)'
+        if command =~ /#{zsh}/
+          p = zsh
+        else
+          p = bash
+        end
+        command.split(/#{p}/)[COMMAND].strip if command.strip !~ /^$/
     end
   end
 end

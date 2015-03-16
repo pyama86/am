@@ -3,58 +3,59 @@ require 'am'
 module AM
   class Config
     attr_accessor :al, :pg
+
     def initialize
-      file_load
+      @al = []
+      @pg = {}
+      load_config
     end
 
-    def file_load
-      @al    = []
-      @pg    = {} 
-      pg_buf = []
+    def load_config
+      @al = file_load(CONFIG_FILE)
+      buf = file_load(LOCAL_FILE)
+      @pg = Hash[buf] unless buf.empty?
+    end
 
-      # load alias config
-      File.open(CONFIG_FILE, 'r') do |file|
-        file.each_line do |line|
-          @al    << line.gsub(/^alias /, '').strip.split('=', 2) if(line =~ /^alias/)
-          # migration
-          pg_buf << line.strip.split('=', 2) if line.strip =~ /^[^alias]/ && line.strip =~ /^[^#.*]/ && line.strip !~ /^$/
-        end
-      end if File.exists?(CONFIG_FILE)
+    def file_load(file_name)
+      buf = []
 
-      # load program config
-      File.open(LOCAL_FILE, 'r') do |file|
+      File.open(file_name, 'r') do |file|
         file.each_line do |line|
-          pg_buf << line.strip.split('=', 2) if line.strip =~ /^[^alias]/ && line.strip =~ /^[^#.*]/ && line.strip !~ /^$/
+          line = line.strip
+          buf    << line.gsub(/^alias /, '').split('=', 2) if line !~ /^$/ && line =~ /.+=.+/ && line !~ /^#.*/
         end
-      end if File.exists?(LOCAL_FILE)
-      @pg   = Hash[pg_buf] unless pg_buf.empty?
+      end if File.exists?(file_name)
+
+      buf
+    end
+
+    def file_write(file_name, config, prefix=nil, exclude=nil)
+      tmp_file = file_name + '.tmp'
+      file = File.open(tmp_file, "w")
+      new = []
+
+      config.each do |n,v|
+        r = "#{prefix}#{n.to_s}=#{v.to_s}"
+        if n.to_s != exclude
+          file.puts(r)
+          new << [n, v]
+        end
+      end
+
+      file.close
+      new if File.rename(tmp_file, file_name) == 0
     end
 
     def save_config(exclude=nil)
-      config_tmp_file = CONFIG_FILE + '.tmp'
-      file = File.open(config_tmp_file, "w")
-      new_al = []
 
-      file.puts("# alias config")
-      @al.each do |a,c|
-        r = "alias #{a.to_s}=#{c.to_s}"
-        if a.to_s != exclude
-          file.puts(r)
-          new_al << [a, c]
-        end
-      end
-      @al = new_al
-      file.close
+      al_result = file_write(CONFIG_FILE, @al, 'alias ', exclude)
+      pg_result = file_write(LOCAL_FILE,  @pg)
 
-      local_tmp_file = LOCAL_FILE + '.tmp'
-      file = File.open(local_tmp_file, "w")
-      file.puts("\n# pg config")
-      @pg.each do |p,v|
-        r = "#{p.to_s}=#{v.to_s}"
-        file.puts(r)
+      if al_result && pg_result
+        @al = al_result
+        @pg = Hash[pg_result] unless pg_result.empty?
+        true
       end
-      file.close
-      (File.rename(config_tmp_file, CONFIG_FILE) == 0 && File.rename(local_tmp_file, LOCAL_FILE) == 0)
     end
   end
 end

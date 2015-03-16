@@ -7,6 +7,7 @@ describe AM::Tail do
         config= AM::Config.new
         config.pg['history_file'] = hist_file
         ENV['SHELL'] = shell
+        add_history(hist_file)
         @tail = AM::Tail.new(config)
       end
 
