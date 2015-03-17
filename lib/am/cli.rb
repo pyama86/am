@@ -108,7 +108,7 @@ module AM
         ak,av = add_record.first
         unless ak.length > 0 || av.length > 0
           puts   "[error] #{ak} / #{av} length equal 0"
-          return false 
+          return false
         end
         true
       end
