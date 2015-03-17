@@ -5,7 +5,7 @@ describe AM::CLI do
   shared_examples_for "shell test" do
     before do
       ENV['SHELL'] = shell
-      add_history(AM::Tail.new(AM::Config.new).profile[:file])
+      add_history
     end
 
     before(:each) do

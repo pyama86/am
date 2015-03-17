@@ -5,72 +5,62 @@ module AM
   class Tail
     attr_accessor :profile
     def initialize(config)
-      set_profile(config)
+      @profile = get_profile(config)
     end
 
-    def set_profile(config)
+    def get_profile(config)
       shell = ENV['SHELL']
-      @profile = {}
-
-      if shell =~ /zsh/
-        @profile = {
-          margin:   0,
-          max_line: 5,
-          file:     '~/.zsh_history'
-        }
-      elsif shell =~ /bash/
-        @profile = {
-          margin:   1,
-          max_line: 5,
-          file:     '~/.bash_history'
-        }
-      else
-        puts "does not support is #{shell}"
-        exit
+      h = case shell
+      when /zsh/  then set_hash(0, 5, '~/.zsh_history')
+      when /bash/ then set_hash(1, 5, '~/.bash_history')
+      else # todo raise
+          puts "does not support is #{shell}"
+          exit
       end
 
-      @profile[:file] = config.pg['history_file'] unless config.pg['history_file'].nil?
-      @profile[:file] = File.expand_path(@profile[:file])
+      h[:file] = f if f =  config.pg['history_file']
+      h[:file] = File.expand_path(h[:file])
 
-      unless File.exists?(@profile[:file])
-        puts "history file not found #{@profile[:file]}"
+      unless File.exists?(h[:file])
+        #todo raise
+        puts "history file not found #{h[:file]}"
         exit
       end
+      h
+    end
+
+    def set_hash(margin, max_line, history_file)
+      return { margin: margin, max_line: max_line, file: history_file }
     end
 
     def get_last_five_command
-      exit if @profile.empty?
       commands = []
+      r=""
       last_commands = `tail -#{@profile[:max_line] + 1 - @profile[:margin]} #{@profile[:file]} | head -#{@profile[:max_line]}`.split("\n")
-
-      last_commands.each_with_index  do |c,i|
-        if r = sampling(c)
-          commands << r
+      unless last_commands.empty?
+        last_commands.each_with_index do |c,i|
+          commands << r if r = sampling(c)
         end
-      end unless last_commands.empty?
-
-      commands
+        commands
+      end
     end
 
     def get_last_command
-      exit if @profile[:file].empty?
-
+      r=""
       if c = `tail -#{2-@profile[:margin]} #{@profile[:file]} | head -1`
-        if r = sampling(c)
-          r
-        end
+        sampling(c)
       end
     end
 
     def sampling(command)
       zsh  = '[0-9]+:[0-0];(.*)'
       bash = '(.*)'
-        if command =~ /#{zsh}/
-          p = zsh
-        else
-          p = bash
-        end
-        command.split(/#{p}/)[COMMAND].strip if command.strip !~ /^$/
+      if command =~ /#{zsh}/
+        p = zsh
+      else
+        p = bash
+      end
+      command.split(/#{p}/)[COMMAND].strip if command.strip !~ /^$/
     end
   end
 end

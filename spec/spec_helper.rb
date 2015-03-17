@@ -1,14 +1,21 @@
 # encoding: utf-8 
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
 require 'am'
 require 'am/cli'
 require 'tail'
 require 'config'
-require "codeclimate-test-reporter"
-CodeClimate::TestReporter.start
 
-def add_history(hist_file)
+def file_write(file_name, records, mode='a')
+  file_name = File.expand_path(file_name)
+  file = File.open(file_name, mode)
+    records.split("\n").each {|r| file.puts(r) }
+  file.close
+end
 
-record = <<'EOS'
+def add_history
+
+records = <<'EOS'
 : 1426499455:0;rake
 rake
 : 1426500006:0;rails
@@ -22,15 +29,13 @@ pepabo
 : 1426500618:0;abcd ABCD 1234 あいうえ
 abcd ABCD 1234 あいうえ"
 EOS
-  hist_file = File.expand_path(hist_file)
+  hist_file = File.expand_path(AM::Tail.new(AM::Config.new).profile[:file])
   type = File.exists?(hist_file)? 'a' : 'w'
-  file = File.open(hist_file, type)
-    record.split("\n").each {|r| file.puts(r) }
-  file.close
+  file_write(hist_file, records, type)
 end
 
 def add_alias_config
-record = <<'EOS'
+records = <<'EOS'
 alias hoge='fuga'
 alias 123='123'
 alias ABC='ABC'
@@ -39,9 +44,7 @@ alias ほげ='ふがふが'
 EOS
 
   config_file = File.expand_path(AM::CONFIG_FILE)
-  file = File.open(config_file, "w")
-  record.split("\n").each {|r| file.puts(r) }
-  file.close
+  file_write(config_file, records, 'w')
 end
 
 def match_current_config
