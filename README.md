@@ -55,6 +55,10 @@ echo 'source ~/.am_config' >> ~/.bash_profile
     delete alias select from current config
 
 ### configure
+  * defoult alias
+  ```
+  aml = source ~/.am_config
+  ```
 
   * history file location(optional)
 

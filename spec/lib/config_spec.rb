@@ -53,26 +53,6 @@ describe AM::Config do
         expect(@pv).to eq "~/.csh_history"
       end
     end
-
-    describe 'save config'do
-      before do
-        file_write(AM::LOCAL_FILE, "history_file=~/.csh_history", 'w')
-        @config= AM::Config.new
-        @config.pg["history_file"] = "~/.zsh_history"
-      end
-      it 'change' do
-        expect(@config.save_config).to be true
-        expect(@config.pg.length).to eql(1)
-        expect(@config.pg.key?('history_file')).to be true
-        expect(@config.pg['history_file']).to eq "~/.zsh_history"
-      end
-      it 'delete' do
-        @config.pg.delete('history_file')
-        expect(@config.save_config()).to be true
-        expect(@config.pg.length).to eql(0)
-        expect(@config.pg.key?('history_file')).to be false 
-      end
-    end
     after do
       file_write(AM::LOCAL_FILE, '','w');
     end
