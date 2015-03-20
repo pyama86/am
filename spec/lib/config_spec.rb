@@ -9,12 +9,16 @@ describe AM::Config do
       describe 'load config' do
         before do
           file_write(AM::CONFIG_FILE,"alias test1='test az - AZ 09 _", 'w')
-          @config= AM::Config.new
-          @ak,@av = @config.al.first
+          config= AM::Config.new
+          @ak,@av = config.al.first
+          config.save_config
+          @all_config = file_load(AM::CONFIG_FILE)
         end
         it 'load' do
           expect(@ak).to eq 'test1'
           expect(@av).to eq "'test az - AZ 09 _"
+          expect(@all_config.key?('aml')).to be true
+          expect(@all_config['aml']).to eq "'source ~/.am_config'"
         end
       end
 

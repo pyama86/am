@@ -1,4 +1,4 @@
-# encoding: utf-8 
+# encoding: utf-8
 require "codeclimate-test-reporter"
 CodeClimate::TestReporter.start
 require 'am'
@@ -79,4 +79,14 @@ current commands of the config
  4 : aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
  5 : ほげ                                    = 'ふがふが'
 EOS
+end
+def file_load(file_name)
+  buf = []
+  File.open(file_name, 'r') do |file|
+    file.each_line do |line|
+      line = line.strip
+      buf << line.gsub(/^alias /, '').split('=', 2) if line !~ /^$/ && line =~ /.+=.+/ && line !~ /^#.*/
+    end
+  end if File.exists?(file_name)
+  Hash[buf]
 end

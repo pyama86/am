@@ -37,16 +37,16 @@ module AM
 
     def save_config
       (
-        file_write(CONFIG_FILE, @al.merge({"aml" => 'source ~/.am_config'}))
+        file_write(CONFIG_FILE, @al.merge({"aml" => "'source ~/.am_config'"}))
       )
     end
 
-    def file_write(file_name, config, prefix=nil)
+    def file_write(file_name, config)
       tmp_file = file_name + '.tmp'
       file = File.open(tmp_file, "w")
 
       config.each do |k,v|
-        r = "#{prefix}#{k.to_s}=#{v.to_s}"
+        r = "alias #{k.to_s}=#{v.to_s}"
         file.puts(r)
       end
 
