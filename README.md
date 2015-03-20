@@ -11,6 +11,7 @@
 ## Usage
 
 * zsh user
+
 run this command
 ```
 echo 'source ~/.am_config'  >> ~/.zprofile
