@@ -3,6 +3,7 @@ require 'am'
 
 module AM
   module Validate
+    include MessageControl
     def uniq?(new_alias)
       ak,av = new_alias.first
       @config.al.each do |k,v|

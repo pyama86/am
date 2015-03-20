@@ -72,8 +72,5 @@ module AM
       end
       @config.delete_config(delete_alias)
     end
-
-    no_commands do
-    end
   end
 end

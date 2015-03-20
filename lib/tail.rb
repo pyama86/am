@@ -1,4 +1,4 @@
-# encoding: utf-8 
+# encoding: utf-8
 require 'am'
 
 module AM
@@ -10,7 +10,7 @@ module AM
 
     def get_profile(config)
       shell = ENV['SHELL']
-      h = case shell
+      profile = case shell
       when /zsh/  then set_hash(0, 5, '~/.zsh_history')
       when /bash/ then set_hash(1, 5, '~/.bash_history')
       else # todo raise
@@ -18,15 +18,15 @@ module AM
           exit
       end
 
-      h[:file] = f if f =  config.pg['history_file']
-      h[:file] = File.expand_path(h[:file])
+      profile[:file] = f if f = config.pg['history_file']
+      profile[:file] = File.expand_path(profile[:file])
 
-      unless File.exists?(h[:file])
+      unless File.exists?(profile[:file])
         #todo raise
         puts "history file not found #{h[:file]}"
         exit
       end
-      h
+      profile
     end
 
     def set_hash(margin, max_line, history_file)
