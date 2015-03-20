@@ -31,7 +31,7 @@ shopt -u histappend
 export HISTSIZE=9999
 ```
 
-run this commnad
+run this command
 
 ```
 echo 'source ~/.am_config' >> ~/.bash_profile
@@ -55,7 +55,7 @@ echo 'source ~/.am_config' >> ~/.bash_profile
     delete alias select from current config
 
 ### configure
-  * defoult alias
+  * default alias
   ```
   aml = source ~/.am_config
   ```
