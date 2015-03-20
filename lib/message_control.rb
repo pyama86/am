@@ -21,25 +21,21 @@ module AM
     }
 
     def notice(code, val=nil)
-      puts "\n" + '-'*60
       print(NOTICE_MESSAGE, 'info', code, val)
-      puts '-'*60
     end
 
     def warning(code, val=nil)
-      puts "\n" + '-'*60
       print(WARNING_MESSAGE, 'warning', code, val)
-      puts '-'*60
     end
     def error(code, val=nil)
-      puts "\n" + '-'*60
       print(ERROR_MESSAGE, 'error', code, val)
-      puts '-'*60
       exit
     end
 
     def print(template, prefix, code, val=nil)
+      puts "\n" + '-'*60
       puts "[#{prefix}] #{template[code]}"%val
+      puts '-'*60
     end
   end
 end
