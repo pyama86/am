@@ -8,12 +8,4 @@ module AM
   ALIAS       = 0
   COMMAND     = 1
   TAIL_LINE = 10
-
-  def self.p1(message="")
-    puts "\n#{message}"
-  end
-
-  def self.p2(message="")
-    puts "#{message}\n\n"
-  end
 end
