@@ -44,15 +44,9 @@ echo 'source ~/.am_config' >> ~/.bash_profile
     print current config
 
     $ am add
-    add alias from last history command
+    add alias select last history command
 
-    $ am add -l(list)
-    add alias select from five line last history command
-
-    $ am del [alias_name)
-    delete alias from alias_name
-
-    $ am del -l(list)
+    $ am del
     delete alias select from current config
 
 ### configure
