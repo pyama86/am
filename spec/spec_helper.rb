@@ -24,10 +24,8 @@ rails
 cd /hoge/fuga/hoge/fuga
 : 1426500307:0;cat /hoge | grep 'hoge'
 cat /hoge | grep 'hoge'
-: 1426500358:0;pepabo
-pepabo
 : 1426500618:0;abcd ABCD 1234 あいうえ
-abcd ABCD 1234 あいうえ"
+abcd ABCD 1234 あいうえ
 EOS
   hist_file = File.expand_path(AM::Tail.new(AM::Config.new).profile[:file])
   type = File.exists?(hist_file)? 'a' : 'w'
@@ -50,34 +48,45 @@ end
 def match_current_config
 return <<'EOS'
 
-current commands of the config
+------------------------------------------------------------
+current registered alias
  1 : hoge                                  = 'fuga'
  2 : 123                                   = '123'
  3 : ABC                                   = 'ABC'
  4 : aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
  5 : ほげ                                    = 'ふがふが'
+------------------------------------------------------------
 
 EOS
 end
 
-def match_last_five_command
+def match_last_command
 return <<'EOS'
- 1 : cat /hoge | grep 'hoge'
- 2 : cat /hoge | grep 'hoge'
- 3 : pepabo
- 4 : pepabo
- 5 : abcd ABCD 1234 あいうえ
+  1 : rake
+  2 : rake
+  3 : rails
+  4 : rails
+  5 : cd /hoge/fuga/hoge/fuga
+  6 : cd /hoge/fuga/hoge/fuga
+  7 : cat /hoge | grep 'hoge'
+  8 : cat /hoge | grep 'hoge'
+  9 : abcd ABCD 1234 あいうえ
+ 10 : abcd ABCD 1234 あいうえ
 EOS
 end
 
 def match_delete_list
 return <<'EOS'
-current commands of the config
+
+------------------------------------------------------------
+current registered alias
  1 : hoge                                  = 'fuga'
  2 : 123                                   = '123'
  3 : ABC                                   = 'ABC'
  4 : aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
  5 : ほげ                                    = 'ふがふが'
+------------------------------------------------------------
+
 EOS
 end
 def file_load(file_name)

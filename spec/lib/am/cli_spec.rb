@@ -3,11 +3,6 @@ require 'spec_helper.rb'
 
 describe AM::CLI do
   shared_examples_for "shell test" do
-    before do
-      ENV['SHELL'] = shell
-      add_history
-    end
-
     before(:each) do
       add_alias_config
       @cli = AM::CLI.new
@@ -19,29 +14,6 @@ describe AM::CLI do
       end
     end
 
-    describe 'register' do
-      describe 'add' do
-        before do
-          allow(STDIN).to receive(:gets) { "add_command_alias\n" }
-          expect { @cli.show }.not_to output(/add_command_alias/).to_stdout
-        end
-        it 'single' do
-          expect { @cli.add }.to  output(/success/).to_stdout
-          expect { @cli.add }.to  output(/duplecate/).to_stdout
-          expect { @cli.show }.to output(/add_command_alias/).to_stdout
-        end
-      end
-      describe 'delete' do
-        before do
-          expect { @cli.show }.to output(/ほげ/).to_stdout
-        end
-        it 'single' do
-          expect { @cli.del('ほげ') }.to output(/success/).to_stdout
-          expect { @cli.show }.not_to    output(/ほげ/).to_stdout
-        end
-      end
-    end
-
     describe 'register option' do
       describe 'add' do
         before do
@@ -49,10 +21,9 @@ describe AM::CLI do
           expect { @cli.show }.to_not output(/last_command_alias/).to_stdout
         end
         it 'list' do
-          expect { @cli.invoke(:add, [], {list: true}) }.to output(/#{match_last_five_command}/).to_stdout
-          expect { AM::CLI.new.show }.to output(/last_command_alias/).to_stdout
+          expect { @cli.add }.to output(/#{match_last_command}/).to_stdout
+          expect { @cli.show }.to output(/last_command_alias/).to_stdout
         end
-
       end
       describe 'del' do
         before do
@@ -60,19 +31,23 @@ describe AM::CLI do
           expect { @cli.show }.to output(/hoge/).to_stdout
         end
         it 'list' do
-          expect { @cli.invoke(:del, [], {list: true}) }.to output(/#{match_delete_list}/).to_stdout
-          expect { AM::CLI.new.show }.to_not output(/hoge/).to_stdout
+          expect { @cli.del }.to output(/#{match_delete_list}/).to_stdout
+          expect { @cli.show }.to_not output(/hoge/).to_stdout
         end
       end
     end
   end
   describe 'zsh' do
-    let(:shell)     {'/bin/zsh' }
+    ENV['SHELL'] = '/bin/zsh'
+    add_history
+    hist_file = File.expand_path('~/.zsh_history')
+    file_write(hist_file,'abcd ABCD 1234 あいうえ', 'a')
     it_should_behave_like 'shell test'
   end
 
   describe 'bash' do
-    let(:shell)     {'/bin/bash' }
+    ENV['SHELL'] = '/bin/bash'
+    add_history
     it_should_behave_like 'shell test'
   end
 end

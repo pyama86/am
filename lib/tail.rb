@@ -1,9 +1,12 @@
 # encoding: utf-8
 require 'am'
+require 'message_control'
 
 module AM
   class Tail
+    include MessageControl
     attr_accessor :profile
+
     def initialize(config)
       @profile = get_profile(config)
     end
@@ -11,44 +14,35 @@ module AM
     def get_profile(config)
       shell = ENV['SHELL']
       profile = case shell
-      when /zsh/  then set_hash(0, 5, '~/.zsh_history')
-      when /bash/ then set_hash(1, 5, '~/.bash_history')
-      else # todo raise
-          puts "does not support is #{shell}"
-          exit
+      when /zsh/  then set_hash(0, '~/.zsh_history')
+      when /bash/ then set_hash(1, '~/.bash_history')
+      else
+          error(:no_support, shell)
       end
-
-      profile[:file] = f if f = config.pg['history_file']
+      f = config.pg['history_file']
+      profile[:file] = f if f
       profile[:file] = File.expand_path(profile[:file])
 
       unless File.exists?(profile[:file])
-        #todo raise
-        puts "history file not found #{h[:file]}"
+        error(:not_exists_history_file, profile[:file])
         exit
       end
       profile
     end
 
-    def set_hash(margin, max_line, history_file)
-      return { margin: margin, max_line: max_line, file: history_file }
-    end
-
-    def get_last_five_command
-      commands = []
-      r=""
-      last_commands = `tail -#{@profile[:max_line] + 1 - @profile[:margin]} #{@profile[:file]} | head -#{@profile[:max_line]}`.split("\n")
-      unless last_commands.empty?
-        last_commands.each_with_index do |c,i|
-          commands << r if r = sampling(c)
-        end
-        commands
-      end
+    def set_hash(margin,  history_file)
+      return { margin: margin, file: history_file }
     end
 
     def get_last_command
-      r=""
-      if c = `tail -#{2-@profile[:margin]} #{@profile[:file]} | head -1`
-        sampling(c)
+      commands = []
+      last_commands = `tail -#{TAIL_LINE + 1 - @profile[:margin]} #{@profile[:file]} | head -#{TAIL_LINE}`.split("\n")
+      unless last_commands.empty?
+        last_commands.each_with_index do |c,i|
+          r = sampling(c)
+          commands << r if r
+        end
+        commands
       end
     end
 
@@ -56,11 +50,11 @@ module AM
       zsh  = '[0-9]+:[0-0];(.*)'
       bash = '(.*)'
       if command =~ /#{zsh}/
-        p = zsh
+        pattern = zsh
       else
-        p = bash
+        pattern = bash
       end
-      command.split(/#{p}/)[COMMAND].strip if command.strip !~ /^$/
+      command.split(/#{pattern}/)[COMMAND].strip if command.strip !~ /^$/
     end
   end
 end

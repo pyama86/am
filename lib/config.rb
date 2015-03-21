@@ -14,7 +14,7 @@ module AM
     def load_config
       @al = file_load(CONFIG_FILE)
       @pg = file_load(LOCAL_FILE)
-      @al.delete('aml')
+      @al.delete('aml')            #delete default alias
     end
 
     def add_config(new_alias)
@@ -22,7 +22,7 @@ module AM
       if save_config
         notice(:success_add_command, [new_alias.first.to_a, CONFIG_FILE].flatten)
       else
-        error(add_command,[ak, av])
+        error(:add_command_fail,new_alias.flatten)
       end
     end
 
@@ -31,14 +31,12 @@ module AM
       if save_config
         notice(:success_delete_command, [del_alias, CONFIG_FILE])
       else
-        error(:fail_delete, del_alias)
+        error(:delete_command_fail, del_alias)
       end
     end
 
     def save_config
-      (
-        file_write(CONFIG_FILE, @al.merge({"aml" => "'source ~/.am_config'"}))
-      )
+      (file_write(CONFIG_FILE, @al.merge({"aml" => "'source ~/.am_config'"})))
     end
 
     def file_write(file_name, config)
@@ -49,9 +47,8 @@ module AM
         r = "alias #{k.to_s}=#{v.to_s}"
         file.puts(r)
       end
-
       file.close
-      (File.rename(tmp_file, file_name) == 0)
+      File.rename(tmp_file, file_name) == 0
     end
 
     def file_load(file_name)
