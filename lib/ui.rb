@@ -32,9 +32,7 @@ module AM
     def add_command_with_number(commands)
       number = get_number
 
-      if valid?(number, "^[^0-9]+$")
-        warning(:validate_number)
-      elsif number.to_i > TAIL_LINE || number.to_i <= 0
+      if number.to_i > TAIL_LINE
         warning(:validate_number_range, TAIL_LINE)
       else
         alias_name = get_alias
@@ -44,20 +42,22 @@ module AM
 
     def delete_command_with_number(config)
       number = get_number
-      if valid?(number, "^[1-9]+$")
-        if config.al.length >= number.to_i && config.al.key?(config.al.to_a[number.to_i-1][0])
-          config.al.to_a[number.to_i-1][0]
-        else
-          warning(:empty_config_number)
-        end
+      if config.al.length >= number.to_i && config.al.key?(config.al.to_a[number.to_i-1][0])
+        config.al.to_a[number.to_i-1][0]
       else
-        warning(:validate_number)
+        warning(:empty_config_number)
       end
     end
 
     def get_number
       print 'please select number: '
-      get_stdin
+      number = get_stdin
+      if valid?(number, "^[^0-9]+$") || number.to_i <= 0
+        warning(:validate_number)
+        get_number
+      else
+        number
+      end
     end
 
     def get_alias

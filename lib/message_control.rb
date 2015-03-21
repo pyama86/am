@@ -11,7 +11,7 @@ module AM
     WARNING_MESSAGE = {
       add_command: "%s / %s couldn't add command",
       empty_config_number: "selected number missing in current config",
-      validate_number: "please input using number",
+      validate_number: "please input valid number",
       validate_number_range: "please input number 1-%s",
       validate_alias: 'input using a-z or 0-9 or _ or -',
     }
