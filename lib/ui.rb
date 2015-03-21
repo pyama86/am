@@ -32,18 +32,19 @@ module AM
     def add_command_with_number(commands)
       number = get_number
 
-      if number.to_i > TAIL_LINE
+      if number > TAIL_LINE
         warning(:validate_number_range, TAIL_LINE)
       else
         alias_name = get_alias
-        {alias_name => quot(commands[number.to_i-1].strip)}
+        {alias_name => quot(commands[number-1].strip)}
       end
     end
 
     def delete_command_with_number(config)
-      number = get_number
-      if config.al.length >= number.to_i && config.al.key?(config.al.to_a[number.to_i-1][0])
-        config.al.to_a[number.to_i-1][0]
+      number     = get_number
+      delete_key = config.al.to_a[number-1][0]
+      if config.al.length >= number && config.al.key?(delete_key)
+        delete_key
       else
         warning(:empty_config_number)
       end
@@ -56,7 +57,7 @@ module AM
         warning(:validate_number)
         get_number
       else
-        number
+        number.to_i
       end
     end
 
