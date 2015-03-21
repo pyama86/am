@@ -46,11 +46,11 @@ module AM
 
     def before_sepalate
       puts ''
-      puts '-'*60
+      puts '='*60
     end
 
     def after_sepalate
-      puts '-'*60
+      puts '='*60
       puts ''
     end
 

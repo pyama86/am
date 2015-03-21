@@ -39,7 +39,7 @@ module AM
       @ui.print_last_commands(commands)
       new_alias = @ui.add_command_with_number(commands)
 
-      unless new_alias
+      unless Hash.try_convert(new_alias)
         add
       else
         if uniq?(new_alias)
@@ -53,12 +53,10 @@ module AM
       unless @config.al.empty?
         @ui.print_current_config(@config)
         delete_alias = @ui.delete_command_with_number(@config)
-
-        if delete_alias && @config.al.key?(delete_alias)
+        unless delete_alias.nil?
           @config.al.delete(delete_alias)
           @config.delete_config(delete_alias)
         else
-          warning(:empty_config_number)
           del
         end
       else

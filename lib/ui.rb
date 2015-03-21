@@ -10,7 +10,7 @@ module AM
     def print_current_config(config)
       aml = config.al.max_by{|c| c[0].length }[0].length #alias max length
       iml = config.al.length.to_s.length                 #index max length
-      before_sepalate
+
       puts 'current registered alias'
       config.al.each_with_index do|(k,v),i|
         # 1: name=command
@@ -22,7 +22,6 @@ module AM
     def print_last_commands(commands)
       iml = commands.length.to_s.length                 #index max length
 
-      before_sepalate
       puts 'current history commands'
       commands.each_with_index  do |c,i|
         puts " #{' '*(iml - (i+1).to_s.length)}#{(i+1).to_s} : #{c.to_s}"
@@ -46,7 +45,11 @@ module AM
     def delete_command_with_number(config)
       number = get_number
       if valid?(number, "^[1-9]+$")
-        config.al.to_a[number.to_i-1][0] if config.al.length >= number.to_i
+        if config.al.length >= number.to_i && config.al.key?(config.al.to_a[number.to_i-1][0])
+          config.al.to_a[number.to_i-1][0]
+        else
+          warning(:empty_config_number)
+        end
       else
         warning(:validate_number)
       end

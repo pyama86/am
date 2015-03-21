@@ -47,15 +47,13 @@ end
 
 def match_current_config
 return <<'EOS'
-
-------------------------------------------------------------
 current registered alias
  1 : hoge                                  = 'fuga'
  2 : 123                                   = '123'
  3 : ABC                                   = 'ABC'
  4 : aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
  5 : ほげ                                    = 'ふがふが'
-------------------------------------------------------------
+============================================================
 
 EOS
 end
@@ -77,15 +75,13 @@ end
 
 def match_delete_list
 return <<'EOS'
-
-------------------------------------------------------------
 current registered alias
  1 : hoge                                  = 'fuga'
  2 : 123                                   = '123'
  3 : ABC                                   = 'ABC'
  4 : aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
  5 : ほげ                                    = 'ふがふが'
-------------------------------------------------------------
+============================================================
 
 EOS
 end
