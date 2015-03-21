@@ -51,8 +51,8 @@ module AM
     desc "del", "delete alias"
     def del
       unless @config.al.empty?
-        arr =  @ui.print_current_config(@config)
-        delete_alias = @ui.del_command_with_number(arr)
+        @ui.print_current_config(@config)
+        delete_alias = @ui.delete_command_with_number(@config)
 
         if delete_alias && @config.al.key?(delete_alias)
           @config.al.delete(delete_alias)

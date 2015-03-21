@@ -10,17 +10,13 @@ module AM
     def print_current_config(config)
       aml = config.al.max_by{|c| c[0].length }[0].length #alias max length
       iml = config.al.length.to_s.length                 #index max length
-      arr = []                                           #use delete number
-
       before_sepalate
       puts 'current registered alias'
       config.al.each_with_index do|(k,v),i|
         # 1: name=command
         puts " #{' '*(iml - (i+1).to_s.length)}#{(i+1).to_s} : #{k.to_s}#{' '*(aml-k.length)} = #{v.to_s}"
-        arr << [i,k]
       end
       after_sepalate
-      arr
     end
 
     def print_last_commands(commands)
@@ -45,14 +41,12 @@ module AM
         alias_name = get_alias
         {alias_name => quot(commands[number.to_i-1].strip)}
       end
-
     end
 
-    def del_command_with_number(arr)
+    def delete_command_with_number(config)
       number = get_number
-
       if valid?(number, "^[1-9]+$")
-        arr[number.to_i-1][1] if arr.length >= number.to_i
+        config.al.to_a[number.to_i-1][0] if config.al.length >= number.to_i
       else
         warning(:validate_number)
       end
