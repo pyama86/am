@@ -8,8 +8,8 @@ module AM
     include Validate
 
     def print_current_config(config)
-      aml = config.al.max_by{|c| c[0].size}[0].length #alias max length
-      iml = config.al.size.to_s.length                 #index max length
+      aml = config.al.keys.max_by{|c| c.length }.length #alias max length
+      iml = config.al.length.to_s.length                 #index max length
 
       puts 'current registered alias'
       config.al.each_with_index do|(k,v),i|
