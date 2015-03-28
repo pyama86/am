@@ -19,9 +19,7 @@ module AM
       else
           error(:no_support, shell)
       end
-      f = config.pg['history_file']
-      profile[:file] = f if f
-      profile[:file] = File.expand_path(profile[:file])
+      profile[:file] = File.expand_path(config.pg['history_file'] || profile[:file])
 
       unless File.exists?(profile[:file])
         error(:not_exists_history_file, profile[:file])
