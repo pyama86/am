@@ -42,9 +42,7 @@ module AM
       unless Hash.try_convert(new_alias)
         add
       else
-        if uniq?(new_alias)
-          @config.add_config(new_alias)
-        end
+        @config.add_config(new_alias) if uniq?(new_alias)
       end
     end
 
